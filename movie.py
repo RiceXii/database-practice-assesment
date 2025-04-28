@@ -1,3 +1,17 @@
+import subprocess
+import sys
+
+try:
+    # Try importing tabulate
+    from tabulate import tabulate
+except ImportError:
+    # If not installed, prompt to install
+    print("Installing 'tabulate'...")
+    subprocess.check_call([sys.executable, "-m", "pip", "install", "tabulate"])
+    print("'tabulate' installed successfully. Please restart the program.")
+    sys.exit()
+header = ['\033[1mID\033[0m', '\033[1mNAME\033[0m', '\033[1mRATING\033[0m']
+
 import sqlite3
 from tabulate import tabulate
 connection = sqlite3.connect("movie_program/movies.db")
@@ -122,8 +136,8 @@ while True:
                     except ValueError:
                         print('Invalid Input')
 
-                rating = (str(update_rating) + "/10")
-                data = [update_name, update_year, rating, update_id]
+                
+                data = [update_name, update_year, update_rating, update_id]
                 cursor.execute('UPDATE films SET movie_name =?, movie_year =?, movie_rating =? WHERE movie_id =?',data)
                 
 
