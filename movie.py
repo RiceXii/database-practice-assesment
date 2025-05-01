@@ -1,6 +1,6 @@
 import subprocess
 import sys
-
+import sqlite3
 # Try importing tabulate, if not installed, install it using pip
 try:
     from tabulate import tabulate
@@ -14,10 +14,9 @@ except ImportError:
 header = ['ID', 'NAME', 'YEAR', 'RATING']
 
 # Import SQLite3 and establish a database connection
-import sqlite3
-from tabulate import tabulate
 connection = sqlite3.connect("movie_program/movies.db")
 cursor = connection.cursor()
+
 
 # Function to check if a movie ID exists in the database
 def findID(id):
@@ -27,12 +26,14 @@ def findID(id):
     if viewid:
         return True
 
+
 # Function to validate that the rating is between 1 and 10
 def checkrating(rating):
     if rating < 0 or rating > 10:
         return False
     else:
         return True
+
 
 # Function to display all movies in the database using tabulate
 def displaymenu():
@@ -42,9 +43,10 @@ def displaymenu():
     print(' \033[1mMOVIES:\033[0m')
     print(tabulate(formatted_rows, headers=header, tablefmt="simple_grid"))
 
+
 # Main program loop
 while True:
-    
+
     # Prompt user for menu action
     movie_menu = input('Enter \033[1m"A"\033[0m to add a new movie \nEnter \033[1m"D"\033[0m to delete a movie\nEnter \033[1m"U"\033[0m to update a movie\nEnter \033[1m"L"\033[0m to list all movies\nEnter anything else to go back to main menu\n').lower().strip()
 
@@ -52,14 +54,14 @@ while True:
     if movie_menu == 'a':
         print('You chose ADD a movie.')
         enter_name = input('Enter film name\n')
-        
+
         while True:
             try:
                 enter_year = int(input('Enter release year\n'))
                 break
             except ValueError:
                 print('Invalid Input')
-        
+
         while True:
             try:
                 enter_rating = float(input('Enter rating of movie\n'))
@@ -79,7 +81,7 @@ while True:
     elif movie_menu == 'd':
         print('You chose DELETE')
         delete_menu = input('Enter \033[1m"A"\033[0m to single delete. \nEnter \033[1m"B"\033[0m to delete all\n')
-        
+
         if delete_menu == 'A':
             while True:
                 delete_id = input('Film ID to delete:\n')
@@ -90,7 +92,7 @@ while True:
             data = [delete_id]
             cursor.execute('DELETE FROM films WHERE movie_id=?', data)
             connection.commit()
-        
+
         if delete_menu == 'b':
             confirm_prompt = input('Are you sure you want to delete all movies? Y/N\n')
             if confirm_prompt == 'y':
@@ -100,7 +102,7 @@ while True:
     # Update an existing movie
     elif movie_menu == 'u':
         print('You chose UPDATE a movie.')
-        
+
         while True:
             try:
                 update_id = int(input('Enter a movie ID\n'))
@@ -187,10 +189,9 @@ while True:
         cursor.execute(query)
         sorted_movies = cursor.fetchall()
         formatted_rows = [(movie_id, movie_name, movie_year, f"{movie_rating}/10") for movie_id, movie_name, movie_year, movie_rating in sorted_movies]
-        
+
         print('\n\033[1mSORTED MOVIES:\033[0m')
         print(tabulate(formatted_rows, headers=header, tablefmt="simple_grid"))
-
 
     # Exit the loop and return to main menu
     else:
